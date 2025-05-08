@@ -12,12 +12,12 @@ CGTransform::~CGTransform()
 }
 void CGTransform::Serialize(CArchive& ar)
 {
-    CGGroup::Serialize(ar); //ÏÈµ÷ÓÃ»ùÀàµÄĞòÁĞ»¯º¯Êı£¬ÔÙĞòÁĞ»¯×Ô¼ºµÄ³ÉÔ±£¨¸ù¾İĞèÒª£© 
-    if (ar.IsStoring())  //±£´æ 
+    CGGroup::Serialize(ar); //å…ˆè°ƒç”¨åŸºç±»çš„åºåˆ—åŒ–å‡½æ•°ï¼Œå†åºåˆ—åŒ–è‡ªå·±çš„æˆå‘˜ï¼ˆæ ¹æ®éœ€è¦ï¼‰ 
+    if (ar.IsStoring())  //ä¿å­˜ 
     {
-        //ar << ; //±£´æ×ÔÉíĞèÒª±£´æµÄÊı¾İ³ÉÔ±¡£<<ÔËËã·ûÖ§³ÖµÄÀàĞÍ²éÔÄCArchiveÊ¹ÓÃËµÃ÷ 
+        //ar << ; //ä¿å­˜è‡ªèº«éœ€è¦ä¿å­˜çš„æ•°æ®æˆå‘˜ã€‚<<è¿ç®—ç¬¦æ”¯æŒçš„ç±»å‹æŸ¥é˜…CArchiveä½¿ç”¨è¯´æ˜ 
     }
-    else //¶ÁÈ¡ 
+    else //è¯»å– 
     {
         //ar >> ;
     }
@@ -28,8 +28,8 @@ bool CGTransform::Render(CGRenderContext* pRC, CGCamera* pCamera)
     if (pRC == nullptr || pCamera == nullptr)
         return false;
 
-    glPushMatrix(); //±£´æ 
-    glMultMatrixf(glm::value_ptr(localMatrix())); //Ïà¶ÔÉÏÒ»¼¶±ä»» 
+    glPushMatrix(); //ä¿å­˜ 
+    glMultMatrixf(glm::value_ptr(localMatrix())); //ç›¸å¯¹ä¸Šä¸€çº§å˜æ¢ 
     if (getRenderStateSet()) {
         glPushAttrib(GL_ALL_ATTRIB_BITS);
         getRenderStateSet()->apply(pCamera, pRC);
@@ -41,7 +41,7 @@ bool CGTransform::Render(CGRenderContext* pRC, CGCamera* pCamera)
     if (getRenderStateSet()) {
         glPopAttrib();
     }
-    glPopMatrix();  //»Ö¸´ 
+    glPopMatrix();  //æ¢å¤ 
 
     return true;
 }
@@ -61,12 +61,12 @@ void CGTransform::dirtyWorldMatrix()
 void CGTransform::setLocalMatrix(const glm::mat4& m)
 {
     mLocalMatrix = m;
-    dirtyWorldMatrix(); //¾Ö²¿¾ØÕó±ä»¯»áµ¼ÖÂµ½ÊÀ½ç×ø±êÏµµÄ¾ØÕó¸Ä±ä¡£ 
+    dirtyWorldMatrix(); //å±€éƒ¨çŸ©é˜µå˜åŒ–ä¼šå¯¼è‡´åˆ°ä¸–ç•Œåæ ‡ç³»çš„çŸ©é˜µæ”¹å˜ã€‚ 
 }
 void CGTransform::translate(float tx, float ty, float tz)
 {
 	mLocalMatrix = glm::translate(mLocalMatrix, glm::vec3(tx, ty, tz));
-    dirtyWorldMatrix();
+    	dirtyWorldMatrix();
 }
 void CGTransform::translate(const glm::vec3& t)
 {
@@ -76,16 +76,20 @@ void CGTransform::translate(const glm::vec3& t)
 void CGTransform::scale(float sx, float sy, float sz)
 {
 	mLocalMatrix = glm::scale(mLocalMatrix, glm::vec3(sx, sy, sz));
+	dirtyWorldMatrix();
 }
 void CGTransform::rotate(float degrees, float x, float y, float z)
 {
 	mLocalMatrix = glm::rotate(mLocalMatrix, glm::radians(degrees), glm::vec3(x, y, z));
+	dirtyWorldMatrix();
 }
 void CGTransform::preMultiply(const glm::mat4& m)
 {
-	mLocalMatrix = m * mLocalMatrix; //×ó³Ë¾ØÕóm
+	mLocalMatrix = m * mLocalMatrix; //å·¦ä¹˜çŸ©é˜µm
+	dirtyWorldMatrix();
 }
 void CGTransform::postMultiply(const glm::mat4& m)
 {
-	mLocalMatrix = mLocalMatrix * m; //ÓÒ³Ë¾ØÕóm
+	mLocalMatrix = mLocalMatrix * m; //å³ä¹˜çŸ©é˜µm
+	dirtyWorldMatrix();
 }
